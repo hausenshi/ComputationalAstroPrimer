@@ -28,7 +28,7 @@ int main(){
   // evolved variables. Assume tube cross-section of 1
   // [variable index][radial index]
   array<array<double,nx>, 3> primitive, conservative;
-    
+
   // temporary variables - left and right side of interfaces
   // [0=left 1=right][variable index][radial index]
   array< array< array<double,nx-1>, 3>, 2> conservativeLR, primitiveLR;
@@ -37,15 +37,15 @@ int main(){
   array<array<double,nx-1>, 3> flux;
   array<array<double,nx>, 3> dcons_dt;
   double max_wavespeed;
-  
+
   // set up the EOS with an adiabatic index
-  EOS eos(adiabatic_index);
-  
+  EOS eos(adiabatic_index); //create eos class
+
   // set up the initial conditions
   // rho left/right, vx left/right, pressure left/right
   primitive = set_initial_conditions<nx>(rhoL, rhoR, vL, vR, PL, PR);
   conservative = get_conservative<nx>(primitive, eos);
-  
+
   // set up file
   int it=0;
   double t=0;
@@ -53,25 +53,25 @@ int main(){
   output.open("output.dat");
   output << "# it t i rho vx P px Etot" << endl;
   print<nx>(output, it, t, primitive, conservative);
-  
+
   // start time integration
   bool end = false;
   while(!end){
     // reconstruct to face values
-    //conservativeLR = // IMPLEMENT ME
+    conservativeLR = piecewise_constant_reconstruct<nx>(conservative);// IMPLEMENT ME
 
     // get primitive values at faces
-    //primitiveLR[0] = // IMPLEMENT ME
-    //primitiveLR[1] = // IMPLEMENT ME
-    
+    primitiveLR[0] = get_primitive<nx-1>(conservativeLR[0], eos);// IMPLEMENT ME
+    primitiveLR[1] = get_primitive<nx-1>(conservativeLR[1], eos);// IMPLEMENT ME
+
     // get HLL fluxes at interfaces
-    //flux = // IMPLEMENT ME
+    flux = HLL_flux<nx-1>(primitiveLR, conservativeLR, eos, &max_wavespeed);// IMPLEMENT ME
 
     // use the flux to get the rate of change of conservative variables
-    //dcons_dt = //IMPLEMENT ME
+    dcons_dt = dConservative_dt<nx>(flux, dx);//IMPLEMENT ME
 
     // determine the timestep and evolve forward
-    double dt = 1e99;// IMPLEMENT ME
+    double dt = courant_factor * dx / max_wavespeed;// IMPLEMENT ME
     if(t+dt > tend){
       dt = tend-t;
       end = true;
@@ -80,15 +80,15 @@ int main(){
     t += dt;
     for(int v=0; v<3; v++)
       for(int i=0; i<nx; i++)
-	conservative[v][i] += 0;// IMPLEMENT ME
+	conservative[v][i] += dcons_dt[v][i] * dt;// IMPLEMENT ME
 
     // apply boundary conditions and map to primitive
-    //reflecting_boundary_conditions<nx,nghost>(conservative);
-    //primitive = //IMPLEMENT ME
-    
+    reflecting_boundary_conditions<nx,nghost>(conservative);
+    primitive = get_primitive<nx>(conservative, eos);//at the center
+
     // output the fluid data
     print<nx>(output, it, t, primitive, conservative);
-  }
+  } //end of loop for ode
 
   output.close();
   return 0;
