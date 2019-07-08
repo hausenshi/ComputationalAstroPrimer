@@ -16,15 +16,15 @@ array<array<double,nx>,3> conservative_flux(const array<array<double,nx>,3>& pri
 
   // density flux
   for(int i=0; i<nx; i++)
-    flux[0][i] = 0;// IMPLEMENT ME
+    flux[0][i] = primitive[0][i] * primitive[1][i];// IMPLEMENT ME
 
   // momentum density flux
   for(int i=0; i<nx; i++)
-    flux[1][i] = 0;// IMPLEMENT ME
+    flux[1][i] = primitive[0][i] * pow(primitive[1][i],2) + primitive[2][i];// IMPLEMENT ME
 
   // energy density flux
   for(int i=0; i<nx; i++)
-    flux[2][i] = 0;// IMPLEMENT ME
+    flux[2][i] = (conservative[2][i] + primitive[2][i]) * primitive[1][i];// IMPLEMENT ME
 
   return flux;
 }
