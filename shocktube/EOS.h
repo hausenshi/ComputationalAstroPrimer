@@ -29,7 +29,7 @@ class EOS{
 					   const array<double,nx>& pressure) const{
     array<double,nx> epsilon;
     for(int i=0; i<nx; i++)
-      epsilon[i] = 0;// IMPLEMENT ME
+      epsilon[i] = pressure[i] / (density[i]*(gamma-1));// IMPLEMENT ME
 
     return epsilon;
   }
@@ -45,8 +45,8 @@ class EOS{
 			    const array<double,nx>& internal_energy_density) const{
     array<double,nx> press;
     for(int i=0; i<nx; i++)
-      press[i] = 0;//IMPLEMENT ME
-    
+      press[i] = (gamma -1)*density[i]*internal_energy_density[i];//IMPLEMENT ME
+
     return press;
   }
 
@@ -61,10 +61,10 @@ class EOS{
 				const array<double,nx>& pressure) const{
     array<double,nx> cs;
     for(int i=0; i<nx; i++)
-      cs[i] = 0;//IMPLEMENT ME
+      cs[i] = sqrt(gamma * pressure[i]/density[i]);//IMPLEMENT ME
 
     return cs;
-  }  
+  }
 };
 
 #endif

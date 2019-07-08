@@ -11,14 +11,14 @@
 // call with:
 //     conservativeLR = piecewise_constant_reconstruct<nx>(conservative);
 template<int nx>
-array< array< array<double,nx-1>, 3>,2> piecewise_constant_reconstruct(array< array<double,nx>,3>& conservative){
+array< array< array<double,nx-1>, 3>,2> piecewise_constant_reconstruct(array< array<double,nx>,3>& conservative){ //declare the format of output
 
-  array< array< array<double,nx-1>,3>,2> conservativeLR;
+  array< array< array<double,nx-1>,3>,2> conservativeLR; //declare the output
 
   for(int v=0; v<3; v++){
-    for(int i=0; i<nx-1; i++){
-      conservativeLR[0][v][i] = 0;// IMPLEMENT ME
-      conservativeLR[1][v][i] = 0;// IMPLEMENT ME
+    for(int i=0; i<nx-1; i++){ //number of cells is nx-1
+      conservativeLR[0][v][i] = conservative[v][i];// IMPLEMENT ME
+      conservativeLR[1][v][i] = conservative[v][i+1];// IMPLEMENT ME
     }
   }
 
