@@ -14,7 +14,7 @@
 using namespace std;
 
 // simulation parameters
-const int nx = 102;                 // number of zones, including ghost zones
+const int nx = 402;                 // number of zones, including ghost zones
 const int nghost = 1;               // number of ghost zones at each end
 const double dx = 1./nx;            // grid spacing
 const double tend = 0.25;           // end time of the simulation
@@ -80,7 +80,7 @@ int main(){
     t += dt;
     for(int v=0; v<3; v++)
       for(int i=0; i<nx; i++)
-	conservative[v][i] += dcons_dt[v][i] * dt;// IMPLEMENT ME
+	conservative[v][i] += -dcons_dt[v][i] * dt;// IMPLEMENT ME
 
     // apply boundary conditions and map to primitive
     reflecting_boundary_conditions<nx,nghost>(conservative);
